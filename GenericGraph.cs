@@ -118,7 +118,7 @@ namespace MyGraph
             var node2 = GetNode(n2);
             if (node1 == null || node2 == null)
                 return false;
-           
+                       
             Queue<INode<T>> queue = new Queue<INode<T>>();
             List<INode<T>> visited = new List<INode<T>>();
             queue.Enqueue(node1);
