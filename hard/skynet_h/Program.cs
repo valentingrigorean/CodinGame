@@ -260,7 +260,7 @@ class Player
                     graph.RemoveConnection(shortestPath[count - 1].Key, shortestPath[count - 2].Key);
                     s1 = shortestPath[count - 1].ToString();
                     s2 = shortestPath[count - 2].ToString();
-                }
+                }                
                 Console.WriteLine(s1 + " " + s2);
                 goto reset;
             }

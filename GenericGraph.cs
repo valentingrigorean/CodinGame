@@ -17,7 +17,6 @@ namespace MyGraph
         void AddConnection(T n1, T n2);
         void RemoveConnection(T n1, T n2);
         bool IsDirected { get; }
-        bool Path(T n1, T n2);
         INode<T> GetNode(T key);
     }
 
@@ -57,6 +56,11 @@ namespace MyGraph
             if (nodes.Contains(node))
                 nodes.Remove(node);
         }
+
+        public override string ToString()
+        {
+            return Key.ToString();
+        }
     }
 
     public delegate INode<T> CreateNode<T>(T key);
@@ -69,7 +73,7 @@ namespace MyGraph
         public Graph(CreateNode<T> createFunct, bool directed = false)
         {
             if (createFunct == null)
-                throw new ArgumentNullException("You need to provide a function.");
+                throw new ArgumentNullException("You need to provide a function that create a INode.");
             createFunction = createFunct;
             IsDirected = directed;
             container = new Dictionary<T, INode<T>>();
@@ -110,24 +114,6 @@ namespace MyGraph
                 else
                     node1.RemoveNode(node2);
             }
-        }
-
-        public bool Path(T n1, T n2)
-        {
-            var node1 = GetNode(n1);
-            var node2 = GetNode(n2);
-            if (node1 == null || node2 == null)
-                return false;
-                       
-            Queue<INode<T>> queue = new Queue<INode<T>>();
-            List<INode<T>> visited = new List<INode<T>>();
-            queue.Enqueue(node1);
-            while (queue.Count != 0)
-            {
-                var n = queue.Dequeue();
-
-            }
-            return false;
         }
 
         private INode<T> CreateIfNotExist(T key)
