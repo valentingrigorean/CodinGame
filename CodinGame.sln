@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asciart", "easy\asciart\asc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "skynet_h", "hard\skynet_h\skynet_h.csproj", "{D572186D-DE21-494D-BA39-202FF207120C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mayan.calculation", "medium\mayan.calculation\mayan.calculation.csproj", "{C3B057D7-691B-4C5F-A837-766500F237BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{D572186D-DE21-494D-BA39-202FF207120C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D572186D-DE21-494D-BA39-202FF207120C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D572186D-DE21-494D-BA39-202FF207120C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3B057D7-691B-4C5F-A837-766500F237BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3B057D7-691B-4C5F-A837-766500F237BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3B057D7-691B-4C5F-A837-766500F237BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3B057D7-691B-4C5F-A837-766500F237BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

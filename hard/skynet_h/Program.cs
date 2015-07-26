@@ -22,7 +22,6 @@ namespace MyGraph
         void AddConnection(T n1, T n2);
         void RemoveConnection(T n1, T n2);
         bool IsDirected { get; }
-        bool Path(T n1, T n2);
         INode<T> GetNode(T key);
     }
 
@@ -82,7 +81,7 @@ namespace MyGraph
                 throw new ArgumentNullException("You need to provide a function.");
             createFunction = createFunct;
             IsDirected = directed;
-            container = new Dictionary<T, INode<T>>();
+            container = new SortedDictionary<T, INode<T>>();
         }
 
         public bool IsDirected { get; private set; }
@@ -120,24 +119,6 @@ namespace MyGraph
                 else
                     node1.RemoveNode(node2);
             }
-        }
-
-        public bool Path(T n1, T n2)
-        {
-            var node1 = GetNode(n1);
-            var node2 = GetNode(n2);
-            if (node1 == null || node2 == null)
-                return false;
-
-            Queue<INode<T>> queue = new Queue<INode<T>>();
-            List<INode<T>> visited = new List<INode<T>>();
-            queue.Enqueue(node1);
-            while (queue.Count != 0)
-            {
-                var n = queue.Dequeue();
-
-            }
-            return false;
         }
 
         private INode<T> CreateIfNotExist(T key)
@@ -186,26 +167,49 @@ class Player
         return shortest;
     }
 
+    public static List<MyNode> DFS(MyNode from, MyNode to, List<MyNode> path, List<MyNode> shortest)
+    {
+        if (!path.Contains(from))
+            path.Add(from);
+        if (from == to)
+            return path;
+        foreach (MyNode n in from.Nodes)
+            if (!path.Contains(n))
+            {
+                if (shortest == null || path.Count < shortest.Count)
+                {
+                    var newPath = DFS(n, to, new List<MyNode>(path), shortest);
+                    if (newPath != null)
+                        shortest = newPath;
+                }
+            }
+        return shortest;
+    }
+
     static void debug(ref Graph<int> g, ref List<MyNode> gw)
     {
-        g.AddConnection(0, 1);
-        g.AddConnection(0, 2);
-        g.AddConnection(0, 3);
-        g.AddConnection(1, 7);
+        g.AddConnection(0, 9);
+        g.AddConnection(0, 7);
+        g.AddConnection(0, 8);
+        g.AddConnection(7, 1);
+        g.AddConnection(7, 9);
+        g.AddConnection(9, 1);
+        g.AddConnection(9, 2);
+        g.AddConnection(9, 8);
+        g.AddConnection(1, 4);
         g.AddConnection(1, 3);
-        g.AddConnection(2, 3);
+        g.AddConnection(1, 2);
+        g.AddConnection(2, 5);
         g.AddConnection(2, 6);
-        g.AddConnection(3, 4);
-        g.AddConnection(3, 5);
-        g.AddConnection(3, 6);
-        g.AddConnection(3, 7);
-        g.AddConnection(4, 7);
-        g.AddConnection(5, 6);
 
         ((MyNode)g.GetNode(4)).IsGateway = true;
+        ((MyNode)g.GetNode(3)).IsGateway = true;
         ((MyNode)g.GetNode(5)).IsGateway = true;
+        ((MyNode)g.GetNode(6)).IsGateway = true;
         gw.Add((MyNode)g.GetNode(4));
+        gw.Add((MyNode)g.GetNode(3));
         gw.Add((MyNode)g.GetNode(5));
+        gw.Add((MyNode)g.GetNode(6));
     }
 
     static void codingame(ref Graph<int> g, ref List<MyNode> gw)
@@ -236,6 +240,11 @@ class Player
 
         var graph = new Graph<int>(id => new MyNode(id));
         List<MyNode> gateway = new List<MyNode>();
+        gateway.Sort((i, j) => {
+            if (i.Key == j.Key)
+                return 0;
+            return i.Key > j.Key ? 1 : -1;
+        });
         debug(ref graph, ref gateway);
         // game loop
         while (true)
@@ -243,8 +252,29 @@ class Player
         reset:
             int SI = int.Parse(Console.ReadLine()); // The index of the node on which the Skynet agent is positioned this turn
             var si = ((MyNode)graph.GetNode(SI));
-
-            var shortestPath = DFS(si, ref gateway, new List<MyNode>(), null);
+            var gww = si.Nodes.Where(ii => ((MyNode)ii).IsGateway);
+            foreach(MyNode n in gww)
+            {
+                Console.WriteLine(si.ToString() +" " + n.ToString());
+                goto reset;
+            }
+            List<MyNode> shortestPath = null;
+            foreach (MyNode n in gateway)
+            {
+                foreach (MyNode nn in n.Nodes)
+                {
+                    var gw = nn.Nodes.Where(i => ((MyNode)i).IsGateway && i != n);
+                    foreach(MyNode j in gw)
+                    {
+                        var temp = DFS(si, n, new List<MyNode>(), null);
+                        if (shortestPath == null || temp.Count < shortestPath.Count)
+                            shortestPath = temp;
+                    }
+                }         
+                
+            }
+            if (shortestPath == null)
+                shortestPath = DFS(si, ref gateway, new List<MyNode>(), null);
             if (shortestPath != null)
             {
                 string s1, s2;
@@ -260,17 +290,9 @@ class Player
                     graph.RemoveConnection(shortestPath[count - 1].Key, shortestPath[count - 2].Key);
                     s1 = shortestPath[count - 1].ToString();
                     s2 = shortestPath[count - 2].ToString();
-                }                
-                Console.WriteLine(s1 + " " + s2);
-                goto reset;
-            }
-            foreach (MyNode node in gateway)
-                foreach (MyNode nn in node.Nodes)
-                {
-                    graph.RemoveConnection(node.Key, nn.Key);
-                    Console.WriteLine(node.Key + " " + nn.Key);
-                    goto reset;
                 }
+                Console.WriteLine(s1 + " " + s2);               
+            }           
         }
     }
 }
