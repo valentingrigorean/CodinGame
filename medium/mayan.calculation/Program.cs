@@ -51,7 +51,8 @@ class Solution
     {
         private List<Letter> container = new List<Letter>();
         private static Letter[] letters = new Letter[20];
-
+        private static int width;
+        private static int height;
         public Number() { }
 
         public Number(long value)
@@ -59,8 +60,17 @@ class Solution
             Value = value;
         }
 
-        public static int Width { get; set; }
-        public static int Height { get; set; }
+        public static int Width
+        {
+            get { return width; }
+            set { width = value; Letter.Width = value; }
+        }
+
+        public static int Height
+        {
+            get { return height; }
+            set { height = value; Letter.Height = value; }
+        }
 
         public List<Letter> Letters { get; }
         public long Value { get; set; }
@@ -78,7 +88,8 @@ class Solution
                 for (int j = 0; j < letters.Length; j++)
                     if (letters[j].Equals(arr[i]))
                     {
-
+                        number += letters[j].Value * (long)Math.Pow(20, currentNumber++);
+                        break;
                     }
             }
             return nr;
@@ -105,8 +116,6 @@ class Solution
             return new Number(n1.Value / n2.Value);
         }
 
-
-
         public override string ToString()
         {
             return base.ToString();
@@ -119,6 +128,10 @@ class Solution
         string[] inputs = Console.ReadLine().Split(' ');
         int L = int.Parse(inputs[0]);
         int H = int.Parse(inputs[1]);
+        Number n1 = null, n2 = null, res = null;
+        Number.Width = L;
+        Number.Height = H;
+
         for (int i = 0; i < H; i++)
         {
             string numeral = Console.ReadLine();
@@ -135,9 +148,24 @@ class Solution
         }
         string operation = Console.ReadLine();
 
+        switch(operation)
+        {
+            case "*":
+                res = n1 * n2;
+                break;
+            case "/":
+                res = n1 / n2;
+                break;
+            case "+":
+                res = n1 + n2;
+                break;
+            case "-":
+                res = n1 + n2;
+                break;
+        }
         // Write an action using Console.WriteLine()
         // To debug: Console.Error.WriteLine("Debug messages...");
 
-        Console.WriteLine("result");
+        Console.WriteLine(res.ToString());
     }
 }
