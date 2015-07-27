@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.IO;
-using System.Text;
-using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using System.IO;
 
 /**
  * Auto-generated code below aims at helping you parse
@@ -15,9 +14,9 @@ class Solution
     {
         private char[] sb;
 
-        public Letter(int width, int height)
+        public Letter()
         {
-            sb = new char[width * height + height];
+            sb = new char[Width * Height + Height];
         }
 
         public int Value { get; set; }
@@ -31,8 +30,8 @@ class Solution
         {
             if (arr.Length > Width)
                 return;
-            Array.Copy(arr, 0, sb, row * Width, Height);
-            arr[row * Width + Height + 1] = '\n';
+            Array.Copy(arr, 0, sb, row * (Width + 1), Width);
+            sb[row * (Width + 1) + Width] = '\n';
         }
 
         public bool Equals(Letter letter)
@@ -42,7 +41,6 @@ class Solution
 
         public override string ToString()
         {
-
             return new string(sb);
         }
     }
@@ -50,6 +48,7 @@ class Solution
     public class Number
     {
         private List<Letter> container = new List<Letter>();
+        private long _value;
         private static Letter[] letters = new Letter[20];
         private static int width;
         private static int height;
@@ -72,8 +71,19 @@ class Solution
             set { height = value; Letter.Height = value; }
         }
 
-        public List<Letter> Letters { get; }
-        public long Value { get; set; }
+
+        public static Letter[] AllLetters { get { return letters; } }
+
+        public List<Letter> Letters { get { return container; } }
+        public long Value
+        {
+            get { return _value; }
+            set
+            {
+                _value = value;
+                CalculateValue();
+            }
+        }
 
         public static Number Create(IList<Letter> arr)
         {
@@ -92,6 +102,7 @@ class Solution
                         break;
                     }
             }
+            nr.Value = number;
             return nr;
         }
 
@@ -118,37 +129,85 @@ class Solution
 
         public override string ToString()
         {
-            return base.ToString();
+            StringBuilder sb = new StringBuilder();
+            foreach (Letter l in container)
+                sb.Append(l.ToString());
+            return sb.ToString();
+        }
+
+        private void CalculateValue()
+        {
+            long current = Value;
+            container.Clear();
+            while (current > 0)
+            {
+                container.Add(AllLetters[current % 20]);
+                current /= 20;
+            }
+            container.Reverse();
         }
     }
 
-
-    static void Main(string[] args)
+    static Number ReadNumber(int n)
     {
-        string[] inputs = Console.ReadLine().Split(' ');
+        var arr = new List<Letter>();
+        var letter = new Letter();
+        for (int i = 0; i < n; i++)
+        {
+            if (i != 0 && i % Number.Height == 0)
+            {
+                arr.Add(letter);
+                letter = new Letter();
+            }
+            string num1Line = Console.ReadLine();
+            letter.SetRow(i % Number.Height, num1Line.ToArray());
+        }
+        arr.Add(letter);
+        return Number.Create(arr);
+    }
+
+    static Number ReadNumberDebug(int n, string[] lines, ref int offset)
+    {
+        var arr = new List<Letter>();
+        var letter = new Letter();
+        for (int i = 0; i < n; i++)
+        {
+            if (i != 0 && i % Number.Height == 0)
+            {
+                arr.Add(letter);
+                letter = new Letter();
+            }
+            string num1Line = lines[offset++];
+            letter.SetRow(i % Number.Height, num1Line.ToArray());
+        }
+        arr.Add(letter);
+        return Number.Create(arr);
+    }
+
+    public static void debug()
+    {
+        var lines = File.ReadAllLines("file.txt");
+        string[] inputs = lines[0].Split(' ');
         int L = int.Parse(inputs[0]);
         int H = int.Parse(inputs[1]);
+        int offset = 1;
         Number n1 = null, n2 = null, res = null;
         Number.Width = L;
         Number.Height = H;
-
+        for (int i = 0; i < 20; i++)
+            Number.AllLetters[i] = new Letter() { Value = i };
         for (int i = 0; i < H; i++)
         {
-            string numeral = Console.ReadLine();
+            string numeral = lines[offset++];
+            for (int j = 0; j < 20; j++)
+                Number.AllLetters[j].SetRow(i, numeral.Substring(j * L, L).ToArray());
         }
-        int S1 = int.Parse(Console.ReadLine());
-        for (int i = 0; i < S1; i++)
-        {
-            string num1Line = Console.ReadLine();
-        }
-        int S2 = int.Parse(Console.ReadLine());
-        for (int i = 0; i < S2; i++)
-        {
-            string num2Line = Console.ReadLine();
-        }
-        string operation = Console.ReadLine();
 
-        switch(operation)
+        n1 = ReadNumberDebug(int.Parse(lines[offset++]), lines, ref offset);
+        n2 = ReadNumberDebug(int.Parse(lines[offset++]), lines, ref offset);
+        string operation = lines[offset];
+
+        switch (operation)
         {
             case "*":
                 res = n1 * n2;
@@ -167,5 +226,54 @@ class Solution
         // To debug: Console.Error.WriteLine("Debug messages...");
 
         Console.WriteLine(res.ToString());
+    }
+
+    public static void codingame()
+    {
+        string[] inputs = Console.ReadLine().Split(' ');
+        int L = int.Parse(inputs[0]);
+        int H = int.Parse(inputs[1]);
+        Number n1 = null, n2 = null, res = null;
+        Number.Width = L;
+        Number.Height = H;
+        for (int i = 0; i < 20; i++)
+            Number.AllLetters[i] = new Letter() { Value = i };
+
+        for (int i = 0; i < H; i++)
+        {
+            string numeral = Console.ReadLine();
+            for (int j = 0; j < 20; j++)
+                Number.AllLetters[j].SetRow(i, numeral.Substring(j * L, L).ToArray());
+        }
+
+        n1 = ReadNumber(int.Parse(Console.ReadLine()));
+        n2 = ReadNumber(int.Parse(Console.ReadLine()));
+
+        string operation = Console.ReadLine();
+
+        switch (operation)
+        {
+            case "*":
+                res = n1 * n2;
+                break;
+            case "/":
+                res = n1 / n2;
+                break;
+            case "+":
+                res = n1 + n2;
+                break;
+            case "-":
+                res = n1 + n2;
+                break;
+        }
+        // Write an action using Console.WriteLine()
+        // To debug: Console.Error.WriteLine("Debug messages...");
+
+        Console.WriteLine(res.ToString());
+    }
+
+    static void Main(string[] args)
+    {
+        debug();
     }
 }
