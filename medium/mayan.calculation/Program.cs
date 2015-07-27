@@ -139,6 +139,11 @@ class Solution
         {
             long current = Value;
             container.Clear();
+            if(Value  == 0)
+            {
+                container.Add(AllLetters[0]);
+                return;
+            }
             while (current > 0)
             {
                 container.Add(AllLetters[current % 20]);
@@ -219,7 +224,7 @@ class Solution
                 res = n1 + n2;
                 break;
             case "-":
-                res = n1 + n2;
+                res = n1 - n2;
                 break;
         }
         // Write an action using Console.WriteLine()
@@ -263,7 +268,7 @@ class Solution
                 res = n1 + n2;
                 break;
             case "-":
-                res = n1 + n2;
+                res = n1 - n2;
                 break;
         }
         // Write an action using Console.WriteLine()
